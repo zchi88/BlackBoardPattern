@@ -1,5 +1,9 @@
 package heartbeat;
 
+/**
+ * HeartbeatSender is the component in the Heartbeat Tactic which sends
+ * aliveness signals to the Heartbeat Receiver at specified intervals.
+ */
 public class HeartbeatSender implements Runnable {
 	private int sendingInterval;
 

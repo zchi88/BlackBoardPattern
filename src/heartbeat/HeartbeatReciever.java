@@ -1,5 +1,9 @@
 package heartbeat;
 
+/**
+ * HeartbeatReceiver is the component in the Heartbeat Tactic which checks
+ * for aliveness signals from the Heartbeat Sender at specified intervals.
+ */
 public class HeartbeatReciever implements Runnable {
 	// The frequency at which we will check for a heartbeat sender update in
 	// miliseconds
