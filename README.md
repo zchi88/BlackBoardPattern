@@ -1,11 +1,10 @@
 # About the HeartbeatTactics Project
-The purpose of this project is to practice implementing the Heartbeat architectural tactic. This tactic aims to improve
-the availability of a system by monitoring the status of a crtical component to ensure that it is alive and running.
-In this example, I have modeled a pacemaker system. I identified the critical component of this system as being the
-sensor which detects heart pulses sent by a simulated heart. 
+The purpose of this project is to practice implementing the Blackboard pattern. This project extends upon the 
+Heartbeat Tactic pacemaker project, and adds additional components as detailed in the blackboard pattern
+to help the system process and generate knowledge. 
 
 ## Architectural Overview
-![Pacemaker with blackboard pattern](https://raw.githubusercontent.com/zchi88/HeartbeatTactic/master/BlackboardPatternPacemaker.png "Pacemaker with blackboard pattern")
+![Pacemaker with blackboard pattern](https://github.com/zchi88/BlackBoardPattern/blob/master/BlackboarPatternPacemaker.png?raw=true "Pacemaker with blackboard pattern")
 
 ## Dependencies
 This application was created with JDK 8 and Eclipse
