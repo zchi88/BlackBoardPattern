@@ -33,8 +33,8 @@ public class HeartSimulator {
 
 				Random randomNumber = new Random();
 				try {
-					// Simulates a 10% chance of missing a beat
-					int heartFailure = randomNumber.nextInt(10);
+					// Simulates a 5% chance of missing a beat
+					int heartFailure = randomNumber.nextInt(20);
 					if (heartFailure == 0) {
 						Thread.sleep(pulseInterval);
 					}
