@@ -1,5 +1,6 @@
 package pacemaker;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -9,15 +10,26 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 
+
+
+/**
+ * PacemakerGUI is a simple GUI to allow users to see what the pacemaker system is doing 
+ * as it runs.
+ */
 public class PacemakerGUI {
-	static JPanel contentPane, dataPane;
+	static JPanel contentPane, heartDataPane, dataPane, bpmPane, pulseStatusPane, activityLevelPane;
 	static TextArea logText;
-	static JTextArea pacemakerData;
+	static JTextField activeSensor, bpm, pulseStatus, activityLevel;
+	static JLabel bpmLabel, pulseStatusLabel, activityLevelLabel;
 
 	// For redirecting the console log of the application to the GUI
 	private static void redirectSystemStreams() {
@@ -50,26 +62,95 @@ public class PacemakerGUI {
 		});
 	}
 
-	protected static void updateData(final String text) {
+	protected static void updateData(String sensor, String beats, String pulse, String activity) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				pacemakerData.setText(text);
+				activeSensor.setText(sensor);
+				bpm.setText(beats);
+				pulseStatus.setText(pulse);
+				activityLevel.setText(activity);
 			}
 		});
 	}
 
 	public static void createGui() {
+		// Create the main GUI window
 		JFrame pacemakerGUI = new JFrame("Pacemaker GUI");
+		
+		// Create a content panel which will house all the GUI components 
 		contentPane = new JPanel(new GridLayout(2, 1));
 
-		pacemakerData = new JTextArea();
-		pacemakerData.setFont(new Font("Arial", Font.BOLD, 30));
-		pacemakerData.setEditable(false);
-		pacemakerData.setOpaque(false);
+		// Create the Data panel which will show all the patient's heart data
+		dataPane = new JPanel(new BorderLayout());
+		
+		// Create the Data panel which will show all the patient's heart data
+		heartDataPane = new JPanel(new GridLayout(1, 3));
+		
+		// Create the component in the GUI which displays the active sensor
+		// detected by the pacemaker
+		activeSensor = new JTextField();
+		activeSensor.setFont(new Font("Arial", Font.BOLD, 30));
+		activeSensor.setEditable(false);
+		activeSensor.setHorizontalAlignment(JTextField.CENTER);
+		activeSensor.setBorder(null);
+		
+		
+		// Create the component in the GUI which displays the patient's BPM
+		bpm = new JTextField();
+		bpm.setFont(new Font("Arial", Font.PLAIN, 24));
+		bpm.setEditable(false);
+		bpm.setHorizontalAlignment(JTextField.CENTER);
+		bpm.setBackground(Color.WHITE);
+		bpm.setBorder(null);
+		bpmLabel = new JLabel("BPM", SwingConstants.CENTER);
+		bpmLabel.setFont(new Font("Arial", Font.PLAIN, 24));
 
-		dataPane = new JPanel();
-		dataPane.add(pacemakerData);
+		
+		// Create the component in the GUI which displays the patient's heart pulse status
+		pulseStatus = new JTextField();
+		pulseStatus.setFont(new Font("Arial", Font.PLAIN, 24));
+		pulseStatus.setEditable(false);
+		pulseStatus.setHorizontalAlignment(JTextField.CENTER);
+		pulseStatus.setBackground(Color.WHITE);
+		pulseStatus.setBorder(null);
+		pulseStatusLabel = new JLabel("Heart Status", SwingConstants.CENTER);
+		pulseStatusLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+		
+		// Create the component in the GUI which displays the patient's current activity level.
+		activityLevel = new JTextField();
+		activityLevel.setFont(new Font("Arial", Font.PLAIN, 24));
+		activityLevel.setEditable(false);
+		activityLevel.setHorizontalAlignment(JTextField.CENTER);
+		activityLevel.setBackground(Color.WHITE);
+		activityLevel.setBorder(null);
+		activityLevelLabel = new JLabel("Activity Level", SwingConstants.CENTER);
+		activityLevelLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+		
+		Border dataBorder = BorderFactory.createLineBorder(Color.GRAY);
+		
+		bpmPane = new JPanel(new BorderLayout());
+		bpmPane.add(bpmLabel, BorderLayout.PAGE_START);
+		bpmPane.add(bpm, BorderLayout.CENTER);
+		bpmPane.setBorder(dataBorder);
+		
+		pulseStatusPane = new JPanel(new BorderLayout());
+		pulseStatusPane.add(pulseStatusLabel, BorderLayout.PAGE_START);
+		pulseStatusPane.add(pulseStatus, BorderLayout.CENTER);
+		pulseStatusPane.setBorder(dataBorder);
+		
+		activityLevelPane = new JPanel(new BorderLayout());
+		activityLevelPane.add(activityLevelLabel, BorderLayout.PAGE_START);
+		activityLevelPane.add(activityLevel, BorderLayout.CENTER);
+		activityLevelPane.setBorder(dataBorder);
+		
+		heartDataPane.add(bpmPane);
+		heartDataPane.add(pulseStatusPane);
+		heartDataPane.add(activityLevelPane);
 
+		dataPane.add(activeSensor, BorderLayout.PAGE_START);
+		dataPane.add(heartDataPane, BorderLayout.CENTER);
+	
+		// Create the log of the GUI which displays pacemaker runtime information
 		logText = new TextArea();
 		logText.setBackground(Color.WHITE);
 		logText.setEditable(false);

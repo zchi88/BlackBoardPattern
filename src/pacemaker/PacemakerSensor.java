@@ -1,15 +1,27 @@
 package pacemaker;
 
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 
+import blackboard.Blackboard;
+import blackboard.BlackboardController;
+import blackboard.KnowledgeSource;
 import heartbeat.HeartbeatSender;
 
-import java.io.*;
-
 /**
+ * PacemakerSensor simulates a sensor which gets attached to the heart and 
+ * detects when the heart pulses. Due to the importance of this component, we have
+ * chosen to ensure its availability by implementing the Heartbeat tactic with this component
+ * as the heartbeat sender. 
  * 
+ * In the blackboard pattern, the PacemakerSensor is also a very important knowledge
+ * source which supplies the blackboard with timestamp information of when it detects
+ * the patient's heart's pulses.
  */
-public class PacemakerSensor extends Thread {
+public class PacemakerSensor extends Thread implements KnowledgeSource{
 	//Port to be used for pacemaker sensor to read users's heart rate
 	private static int  pacemakerPort = 4444;
 
@@ -53,6 +65,8 @@ public class PacemakerSensor extends Thread {
 					while ((heartRateSignal = in.readLine()) != null) {
 						System.out.println("Pulse detected by " + getSensorName() + " sensor.");
 						
+						updateBlackboard();
+						
 						// This code artificially injects a fault which causes the sensor to fail after 10 iterations through this loop.
 						int breaker = count / count;
 						count --;
@@ -72,5 +86,16 @@ public class PacemakerSensor extends Thread {
 			// Causes the heartbeat sender thread to stop when we encounter an error with the sensor
 			heartbeatSender.interrupt();
 		}
+	}
+
+	@Override
+	public void updateBlackboard() {
+		Blackboard.updateTimeStamps(System.currentTimeMillis());
+		activateController();
+	}
+
+	@Override
+	public void activateController() {
+		BlackboardController.loop();
 	}
 }

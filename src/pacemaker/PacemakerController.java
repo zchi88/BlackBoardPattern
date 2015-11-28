@@ -2,9 +2,15 @@ package pacemaker;
 
 import java.util.ArrayList;
 
+import blackboard.Blackboard;
 import heartbeat.HeartbeatReciever;
 
-public class PacemakerController {
+/**
+ * PacemakerController is the "Main" class of the pacemaker application. Its purpose
+ * is to display the GUI and configure components of the pacemaker system such 
+ * as the heartbeat receiver and heartbeat sender.
+ */
+public class PacemakerController{
 	// Specify how often we want to check for the aliveness of the heartbeat
 	// sender
 	private static long checkingInterval = 1000;
@@ -67,25 +73,30 @@ public class PacemakerController {
 	}
 	
 	public static void initiateRecovery() {
+		Blackboard.setSensorDown(System.currentTimeMillis());
 		System.err.println("Recovery initiated.");
 		brokenSensor = activeSensor;
 		startNewSensor();
 		reconfigureBrokenSensor();
+		Blackboard.setSensorUp(System.currentTimeMillis());
 	}
 	
 	public static void updateGUI() {
-		PacemakerGUI.updateData("Active sensor: " + activeSensor.getSensorName());
+		String bpm =  (Blackboard.getBpm() == null) ? "" : Blackboard.getBpm().toString();	
+		PacemakerGUI.updateData("Active sensor: " + activeSensor.getSensorName(), 
+				bpm, Blackboard.getPulseStatus(), Blackboard.getActivityLevel());
 	}
 
 
 	public static void main(String[] args) {
 		PacemakerGUI.showGUI();
-		
+
 		// Add a 10% buffer so we don't declare a false positive of the
 		// heartbeat sender being dead
 		expireTime = (long) Math.floor(PacemakerSensor.getSendingInterval() * 1.1);
 		Thread heartbeatReciever = new Thread(new HeartbeatReciever(checkingInterval, expireTime));
 		heartbeatReciever.start();
+
 		System.out.println("Pacemaker controller is now online.");
 
 		sensorsList.add(mainSensor);
@@ -95,6 +106,8 @@ public class PacemakerController {
 		activeSensor = mainSensor;
 		activeSensor.start();
 		
-		updateGUI();
+		Thread updater = new Thread(new GuiUpdater());
+		updater.start();
 	}
+
 }
